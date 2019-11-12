@@ -1,5 +1,4 @@
-#include "parameters.h"
-#include "simulation.h"
+﻿#include "parameters.h"
 
 #define U_BUFFER_SIZE 96*1024*256
 
@@ -24,16 +23,22 @@ int result_colsize_host;
 __device__ int result_rowsize;
 int result_rowsize_host;
 
+__device__ int cycle_count = 0;
+
+extern void U_buffer_trans(size_t);
+extern __device__ Cell* sys_arr;
+
+
 void u_buffer_ini()
 {
 	cudaMalloc((void**)& array_a_host, sizeof(char) * U_BUFFER_SIZE);
 	cudaMemcpyToSymbol(&u_buffer, &array_a_host, sizeof(char*), 0, cudaMemcpyHostToDevice);
-	cudaMemset(u_buffer, 0, U_BUFFER_SIZE);
+	cudaMemset(array_a_host, 0, U_BUFFER_SIZE);
 }
 
 void u_buffer_free()
 {
-	cudaFree(u_buffer);
+	cudaFree(array_a_host);
 }
 
 void setupArray_a(char* array_a_host_input, int array_a_colsize_host_input, int array_a_rowsize_host_input)
@@ -101,4 +106,43 @@ void setupResult(char op)
 	cudaMemcpyToSymbol(&result, &result_host, sizeof(char*), 0, cudaMemcpyHostToDevice);
 	cudaMemcpyToSymbol(&result_colsize, &result_rowsize, sizeof(int), 0, cudaMemcpyHostToDevice);
 	cudaMemcpyToSymbol(&result_rowsize, &result_rowsize_host, sizeof(int), 0, cudaMemcpyHostToDevice);
+}
+
+__device__ char feed_data_h(int row_num)
+{
+	if (row_num > cycle_count || cycle_count-row_num>=array_a_rowsize)
+		return 0;
+	else
+		return array_a[row_num*array_a_rowsize + cycle_count - row_num];
+}
+
+__device__ char feed_data_v(int col_num)
+{
+	if (col_num > cycle_count || cycle_count - col_num >= array_b_colsize)
+		return 0;
+	else
+		return array_b[(cycle_count - col_num)*array_b_rowsize+col_num];
+}
+
+__global__ void _collect_result()
+{
+	if (blockIdx.x >= result_rowsize)
+		return;
+	if (blockIdx.y == 0)
+		result[blockIdx.x] = sys_arr[(sys_array_size - 1)*sys_array_size + blockIdx.x].result;
+	else
+		result[blockIdx.y*result_rowsize + blockIdx.x] = result[(blockIdx.y - 1)*result_rowsize + blockIdx.x];
+}
+
+__global__ void _result_activate()
+{
+	if (blockIdx.x >= result_rowsize || blockIdx.y >= result_colsize)
+		return;
+	if (result[blockIdx.y*result_rowsize + blockIdx.x] < 0)
+		result[blockIdx.y*result_rowsize + blockIdx.x] = 0;
+}
+
+void result_activate()
+{
+	_result_activate << <dim3(result_rowsize_host, result_colsize_host), 1 >> > ();
 }
