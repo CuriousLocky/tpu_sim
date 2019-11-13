@@ -20,8 +20,7 @@ typedef struct
 	char y;
 	char y_output;
 	char result;
+	char result_output;
 }Cell;
-
-//unsigned int sys_array_size = 256;
 
 #endif

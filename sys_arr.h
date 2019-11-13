@@ -6,5 +6,4 @@ void sys_arr_free();
 void heart_beat();
 void result_shift();
 
-Cell* sys_arr_host;
-__device__ Cell* sys_arr;
+__global__ void reset_count();
