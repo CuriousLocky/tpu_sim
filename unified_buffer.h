@@ -6,7 +6,7 @@ void u_buffer_free();
 void setupArray_a(char* array_a_host_input, int array_a_colsize_host_input, int array_a_rowsize_host_input);
 void setupArray_b(char* array_b_host_input, int array_b_colsize_host_input, int array_b_rowsize_host_input);
 void setupResult(char op);
-void result_activate();
+void collect_result();
 
 __device__ char feed_data_h(int row_num);
 __device__ char feed_data_v(int col_num);

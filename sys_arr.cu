@@ -1,9 +1,9 @@
 ﻿#include "parameters.h"
 #include "unified_buffer.h"
+#include "accumulators.h"
 
 Cell* sys_arr_host;
 __device__ Cell* sys_arr;
-dim3 grid(sys_array_size, sys_array_size);
 
 void flush_sys_arr();
 void sys_arr_free();
@@ -58,25 +58,16 @@ __global__ void _heart_beat()
 		y = feed_data_v(blockIdx.x);
 	else
 		y = sys_arr[blockIdx.x + (blockIdx.y - 1) * gridDim.x].y_output;
-	sys_arr[blockIdx.x + blockIdx.y * gridDim.x].result += x * y;
+	int16_t result = x * y;
+	accumulate(blockIdx.x, blockIdx.y, result);
 	sys_arr[blockIdx.x + blockIdx.y * gridDim.x].x = x;
 	sys_arr[blockIdx.x + blockIdx.y * gridDim.x].y = y;
 }
 
 __global__ void _cell_update()
 {
-	sys_arr[blockIdx.x + blockIdx.y * gridDim.x].result_output = sys_arr[blockIdx.x + blockIdx.y * gridDim.x].result;
 	sys_arr[blockIdx.x + blockIdx.y * gridDim.x].x_output = sys_arr[blockIdx.x + blockIdx.y * gridDim.x].x;
 	sys_arr[blockIdx.x + blockIdx.y * gridDim.x].y_output = sys_arr[blockIdx.x + blockIdx.y * gridDim.x].y;
-}
-
-__global__ void _result_shift()
-{
-	if (blockIdx.y == 0)
-		sys_arr[blockIdx.x + blockIdx.y * sys_array_size].result = 0;
-	else
-		sys_arr[blockIdx.x + blockIdx.y * sys_array_size].result = sys_arr[blockIdx.x + (blockIdx.y-1) * sys_array_size].result_output;
-	
 }
 
 __global__ void increase_count()
@@ -96,14 +87,4 @@ void heart_beat()
 	_cell_update << <grid, 1 >> > ();
 	cudaDeviceSynchronize();
 	increase_count << <1, 1 >> > ();
-}
-
-void result_shift()
-{
-	_collect_result << <dim3(result_rowsize_host, result_colsize_host), 1 >> > ();
-	cudaDeviceSynchronize();
-	_result_shift <<< grid, 1 >>> ();
-	cudaDeviceSynchronize();
-	_cell_update << <grid, 1 >> > ();
-	cudaDeviceSynchronize();
 }

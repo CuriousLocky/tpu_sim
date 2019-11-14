@@ -14,21 +14,21 @@
     <ProjectGuid>{9BFF47C0-A1D8-494D-8E31-6FA0C1066446}</ProjectGuid>
     <RootNamespace>TPU_sim</RootNamespace>
     <ProjectName>tpu_sim</ProjectName>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -91,6 +91,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="accumulators.h" />
     <ClInclude Include="control.h" />
     <ClInclude Include="parameters.h" />
     <ClInclude Include="simulation.h" />
@@ -98,6 +99,7 @@
     <ClInclude Include="unified_buffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="accumulators.cu" />
     <CudaCompile Include="control.cu" />
     <CudaCompile Include="sys_arr.cu" />
     <CudaCompile Include="unified_buffer.cu" />

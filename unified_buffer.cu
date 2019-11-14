@@ -16,8 +16,8 @@ int array_b_colsize_host;
 __device__ int array_b_rowsize;
 int array_b_rowsize_host;
 
-__device__ char* result;
-char* result_host;
+__device__ int32_t* result;
+int32_t* result_host;
 __device__ int result_colsize;
 int result_colsize_host;
 __device__ int result_rowsize;
@@ -26,6 +26,7 @@ int result_rowsize_host;
 __device__ int cycle_count = 0;
 
 extern __device__ Cell* sys_arr;
+extern __device__ uint32_t* accumulators;
 
 void u_buffer_ini()
 {
@@ -70,9 +71,19 @@ void setupArray_b(char* array_b_host_input, int array_b_colsize_host_input, int 
 	cudaMemcpyToSymbol(array_b_rowsize, &array_b_rowsize_host, sizeof(int));
 }
 
+inline int32_t* align(char* in)
+{
+	char last_2 = ((uint64_t)in) & 3;
+	if (last_2 == 0)
+		return (int32_t*)in;
+	else
+		return (int32_t*)(in + 4 - last_2);
+}
+
 void setupResult(char op)
 {
-	result_host = array_b_host + array_b_colsize_host * array_b_rowsize_host;
+	char* result_unaligned = array_b_host + array_b_colsize_host * array_b_rowsize_host;
+	result_host = align(result_unaligned);
 	if (op == MAT_MUL) {
 		if (array_a_rowsize_host != array_b_colsize_host) {
 			printf("Cannot apply multiplication, size unmatched\n");
@@ -94,7 +105,7 @@ void setupResult(char op)
 		exit(0);
 	}
 
-	if (result_colsize_host * result_rowsize_host > U_BUFFER_SIZE - array_a_colsize_host * array_a_rowsize_host - array_b_colsize_host * array_b_rowsize_host) {
+	if ((result_colsize_host * result_rowsize_host)*(sizeof(int32_t)/sizeof(char)) > U_BUFFER_SIZE - array_a_colsize_host * array_a_rowsize_host - array_b_colsize_host * array_b_rowsize_host) {
 		printf("Buffer size insufficient\n");
 		exit(0);
 	}
@@ -122,23 +133,10 @@ __device__ char feed_data_v(int col_num)
 
 __global__ void _collect_result()
 {
-	if (blockIdx.x >= result_rowsize)
-		return;
-	if (blockIdx.y == 0)
-		result[blockIdx.x] = sys_arr[(sys_array_size - 1)*sys_array_size + blockIdx.x].result_output;
-	else
-		result[blockIdx.y*result_rowsize + blockIdx.x] = result[(blockIdx.y - 1)*result_rowsize + blockIdx.x];
+	result[blockIdx.y*result_rowsize + blockIdx.x] = accumulators[blockIdx.y*sys_array_size + blockIdx.x];
 }
 
-__global__ void _result_activate()
+void collect_result()
 {
-	if (blockIdx.x >= result_rowsize || blockIdx.y >= result_colsize)
-		return;
-	if (result[blockIdx.y*result_rowsize + blockIdx.x] < 0)
-		result[blockIdx.y*result_rowsize + blockIdx.x] = 0;
-}
-
-void result_activate()
-{
-	_result_activate << <dim3(result_rowsize_host, result_colsize_host), 1 >> > ();
+	_collect_result << <dim3(result_rowsize_host, result_colsize_host), 1 >> > ();
 }

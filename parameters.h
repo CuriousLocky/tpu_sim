@@ -8,10 +8,12 @@
 #include "device_launch_parameters.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "inttypes.h"
 
 #define MAT_MUL 1
 #define MAT_CON 2
 #define sys_array_size 256
+#define grid dim3(sys_array_size,sys_array_size)
 
 typedef struct
 {

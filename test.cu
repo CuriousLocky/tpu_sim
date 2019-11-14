@@ -2,6 +2,7 @@
 #include "simulation.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "inttypes.h"
 
 int main()
 {
@@ -17,7 +18,7 @@ int main()
 		5,6,7,8,
 		4,3,2,1
 	};
-	char result[20];
+	int32_t result[20];
 	tpu_ini();
 	read_host_memory(A, 5, 3);
 	read_weights(B, 3, 4);

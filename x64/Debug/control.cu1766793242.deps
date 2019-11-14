@@ -183,6 +183,16 @@ c:\program files\nvidia gpu computing toolkit\cuda\v10.1\include\surface_indirec
 c:\program files\nvidia gpu computing toolkit\cuda\v10.1\include\cuda_runtime_api.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.1\include\device_launch_parameters.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.1\include\vector_types.h
+c:\share\tpu_sim\parameters.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include\cuda.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include\cuda_runtime.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include\device_launch_parameters.h
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\corecrt_wstdio.h
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\corecrt_stdio_config.h
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\inttypes.h
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\stdint.h
+c:\share\tpu_sim\sys_arr.h
+c:\share\tpu_sim\unified_buffer.h
+c:\share\tpu_sim\accumulators.h
+c:\share\tpu_sim\simulation.h
