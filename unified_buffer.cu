@@ -140,3 +140,27 @@ void collect_result()
 {
 	_collect_result << <dim3(result_rowsize_host, result_colsize_host), 1 >> > ();
 }
+
+void change_size_a(int new_rowsize, int new_colsize)
+{
+	array_a_rowsize_host = new_rowsize;
+	array_a_colsize_host = new_colsize;
+	cudaMemcpyToSymbol(array_a_rowsize, &array_a_rowsize_host, sizeof(int));
+	cudaMemcpyToSymbol(array_a_colsize, &array_a_colsize_host, sizeof(int));
+}
+
+void change_size_b(int new_rowsize, int new_colsize)
+{
+	array_b_rowsize_host = new_rowsize;
+	array_b_colsize_host = new_colsize;
+	cudaMemcpyToSymbol(array_b_rowsize, &array_b_rowsize_host, sizeof(int));
+	cudaMemcpyToSymbol(array_b_colsize, &array_b_colsize_host, sizeof(int));
+}
+
+void change_size_result(int new_rowsize, int new_colsize)
+{
+	result_rowsize_host = new_rowsize;
+	result_colsize_host = new_colsize;
+	cudaMemcpyToSymbol(result_rowsize, &result_rowsize_host, sizeof(int));
+	cudaMemcpyToSymbol(result_colsize, &result_colsize_host, sizeof(int));
+}

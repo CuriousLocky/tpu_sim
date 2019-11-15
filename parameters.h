@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "inttypes.h"
+#include "string.h"
 
 #define MAT_MUL 1
 #define MAT_CON 2

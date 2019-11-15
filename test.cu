@@ -35,4 +35,28 @@ int main()
 	printf("\n");
 
 	printSimInfo();
+
+	char X[] = {
+		0,0,0,
+		0,0,0,
+		0,0,0
+	};
+	char Y[] = {
+		0,0,0,
+		0,0,0,
+		0,0,0
+	};
+
+	read_host_memory(X, 3, 3);
+	read_weights(Y, 3, 3);
+	int32_t R[6];
+	matrix_convolution();
+	write_host_memory(R);
+	for (int i = 0; i < 1; i++) {
+		for (int j = 0; j < 1; j++)
+			printf("%d ", R[i * 1 + j]);
+		printf("\n");
+	}
+
+	printSimInfo();
 }
