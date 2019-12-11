@@ -4,8 +4,8 @@ int32_t* accumulators_host;
 
 void accumulators_ini()
 {
-	cudaMalloc(&accumulators, sizeof(int32_t) * sys_array_size * sys_array_size);
-	cudaMemcpyToSymbol(accumulators, &accumulators, sizeof(int32_t*));
+	cudaMalloc(&accumulators_host, sizeof(int32_t) * sys_array_size * sys_array_size);
+	cudaMemcpyToSymbol(accumulators, &accumulators_host, sizeof(int32_t*));
 }
 
 void flush_accumulators()

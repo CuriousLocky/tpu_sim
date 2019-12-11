@@ -83,23 +83,16 @@ void matrix_convolution()
 					*(a_buffer + i * array_a_rowsize_host + j + k1 * array_a_rowsize_host + k2) = activation_buffer[k1*array_b_rowsize_host + k2];
 				}
 			}
-			for (int n = 0; n < new_a_rowsize; n++)
-				printf("%d ", a_buffer[n]);
-			printf("\n");
 			cudaMemcpy(array_a_host + (i *result_rowsize+j)*new_a_rowsize, a_buffer, sizeof(char)*new_a_rowsize, cudaMemcpyHostToDevice);
 		}
 	}
-	printf("\n");
-	for (int i = 0; i < new_a_rowsize; i++)
-		printf("%d ", b_buffer[i]);
-	printf("\n");
 	change_size_a(new_a_rowsize, new_a_colsize);
 	setupArray_b(b_buffer, new_a_rowsize, 1);
 	free(b_buffer);
 	free(a_buffer);
 	free(activation_buffer);
 	matrix_multiply();
-	change_size_result(result_rowsize, result_colsize);
+	change_size_result(1, result_colsize*result_rowsize);
 }
 
 void activate()

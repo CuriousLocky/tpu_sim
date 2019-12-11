@@ -22,8 +22,8 @@ typedef struct
 	char x_output;
 	char y;
 	char y_output;
-	char result;
-	char result_output;
+	//char result;
+	//char result_output;
 }Cell;
 
 #endif

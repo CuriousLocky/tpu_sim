@@ -23,20 +23,9 @@ void sys_arr_ini()
 	printf("Systolic array successfully initialized, size %d * %d\n", sys_array_size, sys_array_size);
 }
 
-__global__ void _flush_sys_arr()
-{
-	int x = blockIdx.x;
-	int y = blockIdx.y;
-	sys_arr[x + gridDim.x * y].x = 0;
-	sys_arr[x + gridDim.x * y].y = 0;
-	sys_arr[x + gridDim.x * y].x_output = 0;
-	sys_arr[x + gridDim.x * y].y_output = 0;
-	sys_arr[x + gridDim.x * y].result = 0;
-}
-
 void flush_sys_arr()
 {
-	_flush_sys_arr <<<grid, 1 >>> ();
+	cudaMemset(sys_arr_host, 0, sizeof(Cell) * sys_array_size * sys_array_size);
 }
 
 void sys_arr_free()

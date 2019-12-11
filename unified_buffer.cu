@@ -136,9 +136,20 @@ __global__ void _collect_result()
 	result[blockIdx.y*result_rowsize + blockIdx.x] = accumulators[blockIdx.y*sys_array_size + blockIdx.x];
 }
 
+__global__ void check_result()
+{
+	printf("\nchecking results\n");
+	for (int i = 0; i < result_colsize; i++) {
+		for (int j = 0; j < result_rowsize; j++)
+			printf("%d ", result[i * result_rowsize + j]);
+		printf("\n");
+	}
+}
+
 void collect_result()
 {
 	_collect_result << <dim3(result_rowsize_host, result_colsize_host), 1 >> > ();
+	//check_result << <1, 1 >> > ();
 }
 
 void change_size_a(int new_rowsize, int new_colsize)
