@@ -43,8 +43,12 @@ void matrix_multiply()
 	reset_count << <1, 1 >> > ();
 	flush_accumulators();
 	flush_sys_arr();
-	int beat_cycles = array_a_colsize_host + array_a_rowsize_host + array_b_colsize_host - 1;
+	weight_load(array_b_colsize_host * array_b_rowsize_host);
+	in_buffer_load(array_a_colsize_host * array_a_rowsize_host);
+	int beat_cycles = array_a_colsize_host + array_a_rowsize_host + array_b_rowsize_host - 1;
 	for (int i = 0; i < beat_cycles; i++) {
+		weight_load(256);
+		in_buffer_load(256);
 		heart_beat();
 		sys_arr_cycle();
 	}
@@ -52,10 +56,6 @@ void matrix_multiply()
 
 void matrix_convolution()
 {
-	if (array_a_colsize_host*array_a_rowsize_host > sys_array_size) {
-		printf("cannot perform convolution, size too large\n");
-		return;
-	}
 	if (array_b_colsize_host > array_a_colsize_host || array_b_rowsize_host > array_a_rowsize_host) {
 		printf("cannot perform convolution, size incompatible\n");
 		return;
@@ -68,6 +68,10 @@ void matrix_convolution()
 	}
 	int new_a_rowsize = array_a_colsize_host * array_a_rowsize_host;
 	int new_a_colsize = (array_a_colsize_host - array_b_colsize_host + 1)*(array_a_rowsize_host - array_b_rowsize_host + 1);
+	if (new_a_colsize > sys_array_size) {
+		printf("cannot perform convolution, size too large\n");
+		return;
+	}
 	int result_rowsize = array_a_rowsize_host - array_b_rowsize_host + 1;
 	int result_colsize = array_a_colsize_host - array_b_colsize_host + 1;
 	char* activation_buffer = (char*)malloc(sizeof(char)*array_b_rowsize_host * array_b_colsize_host);
@@ -103,8 +107,8 @@ void activate()
 void write_host_memory(int32_t* host_pos)
 {
 	collect_result();
+	in_buffer_load(result_colsize_host * result_rowsize_host*sizeof(uint32_t));
 	flush_accumulators();
 	U_buffer_trans(result_colsize_host * result_rowsize_host);
 	cudaMemcpy(host_pos, result_host, result_rowsize_host*result_colsize_host * sizeof(int32_t), cudaMemcpyDeviceToHost);
 }
-
